@@ -20,6 +20,9 @@
 #undef __no_sanitize_address
 #define __no_sanitize_address __attribute__((no_sanitize("address")))
 
+/* all clang versions usable with the kernel support KASAN ABI version 5 */
+#define KASAN_ABI_VERSION 5
+
 /* Clang doesn't have a way to turn it off per-function, yet. */
 #ifdef __noretpoline
 #undef __noretpoline
