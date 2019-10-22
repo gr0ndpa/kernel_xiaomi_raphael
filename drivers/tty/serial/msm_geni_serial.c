@@ -1772,13 +1772,13 @@ static void msm_geni_serial_set_termios(struct uart_port *uport,
 		if (ret) {
 			return;
 		}
+		disable_irq(uport->irq);
+		msm_geni_serial_set_manual_flow(false, port);
 	}
 	/* Take a spinlock else stop_rx causes a race with an ISR due to Cancel
 	 * and FSM_RESET. This also has a potential race with the dma_map/unmap
 	 * operations of ISR.
 	 */
-	disable_irq(uport->irq);
-	msm_geni_serial_set_manual_flow(false, port);
 	spin_lock_irqsave(&uport->lock, flags);
 	msm_geni_serial_stop_rx(uport);
 	spin_unlock_irqrestore(&uport->lock, flags);
@@ -1872,8 +1872,10 @@ static void msm_geni_serial_set_termios(struct uart_port *uport,
 		geni_write_reg_nolog(0x0, uport->membase, SE_UART_MANUAL_RFR);
 
 exit_set_termios:
-	msm_geni_serial_set_manual_flow(true, port);
-	enable_irq(uport->irq);
+	if (!uart_console(uport)) {
+		msm_geni_serial_set_manual_flow(true, port);
+		enable_irq(uport->irq);
+	}
 	msm_geni_serial_start_rx(uport);
 	if (!uart_console(uport))
 		msm_geni_serial_power_off(uport);
