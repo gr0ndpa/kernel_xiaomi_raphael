@@ -1159,9 +1159,7 @@ static int usb_icl_vote_callback(struct votable *votable, void *data,
 
 	if (cp_get_parallel_mode(chip, PARALLEL_INPUT_MODE)
 					== POWER_SUPPLY_PL_USBMID_USBMID)
-        if (chip->cp_ilim_votable) {
 		cp_configure_ilim(chip, ICL_CHANGE_VOTER, true, icl_ua);
-	}
 	return 0;
 }
 
