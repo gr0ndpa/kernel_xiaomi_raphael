@@ -111,7 +111,7 @@ int cam_vfe_init_soc_resources(struct cam_hw_soc_info *soc_info,
 	rc = cam_vfe_request_platform_resource(soc_info, vfe_irq_handler,
 		irq_data);
 	if (rc < 0) {
-		CAM_ERR(CAM_ISP,
+		CAM_DBG(CAM_ISP,
 			"Error! Request platform resources failed rc=%d", rc);
 		goto free_soc_private;
 	}

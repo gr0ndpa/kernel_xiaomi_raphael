@@ -38,7 +38,7 @@ int cam_vfe_bus_init(uint32_t          bus_version,
 			bus_hw_info, vfe_irq_controller, vfe_bus);
 		break;
 	default:
-		CAM_ERR(CAM_ISP, "Unsupported Bus Version %x", bus_version);
+		CAM_DBG(CAM_ISP, "Unsupported Bus Version %x", bus_version);
 		break;
 	}
 

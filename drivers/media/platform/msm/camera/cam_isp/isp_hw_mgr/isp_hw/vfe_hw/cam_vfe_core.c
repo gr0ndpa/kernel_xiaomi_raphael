@@ -861,7 +861,7 @@ int cam_vfe_core_init(struct cam_vfe_hw_core_info  *core_info,
 			soc_info, hw_intf, vfe_hw_info->bus_rd_hw_info,
 			core_info->vfe_irq_controller, &core_info->vfe_rd_bus);
 		if (rc) {
-			CAM_ERR(CAM_ISP, "Error! RD cam_vfe_bus_init failed");
+			CAM_DBG(CAM_ISP, "Error! RD cam_vfe_bus_init failed");
 			rc = 0;
 		}
 		CAM_DBG(CAM_ISP, "vfe_bus_rd %pK hw_idx %d",
