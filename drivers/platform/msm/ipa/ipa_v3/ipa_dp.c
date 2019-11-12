@@ -2673,25 +2673,26 @@ begin:
 				sys->status_stat->curr = 0;
 		}
 
-		if ((status.status_opcode !=
-			IPAHAL_PKT_STATUS_OPCODE_DROPPED_PACKET) &&
-			(status.status_opcode !=
-			IPAHAL_PKT_STATUS_OPCODE_PACKET) &&
-			(status.status_opcode !=
-			IPAHAL_PKT_STATUS_OPCODE_SUSPENDED_PACKET) &&
-			(status.status_opcode !=
-			IPAHAL_PKT_STATUS_OPCODE_PACKET_2ND_PASS)) {
-			IPAERR("unsupported opcode(%d)\n",
+		switch (status.status_opcode) {
+		case IPAHAL_PKT_STATUS_OPCODE_DROPPED_PACKET:
+		case IPAHAL_PKT_STATUS_OPCODE_PACKET:
+		case IPAHAL_PKT_STATUS_OPCODE_SUSPENDED_PACKET:
+		case IPAHAL_PKT_STATUS_OPCODE_PACKET_2ND_PASS:
+		case IPAHAL_PKT_STATUS_OPCODE_NEW_FRAG_RULE:
+			break;
+		default:
+			IPAERR_RL("unsupported opcode(%d)\n",
 				status.status_opcode);
 			skb_pull(skb, pkt_status_sz);
 			continue;
 		}
+
 		IPA_STATS_EXCP_CNT(status.exception,
 				ipa3_ctx->stats.rx_excp_pkts);
 		if (status.endp_dest_idx >= ipa3_ctx->ipa_num_pipes ||
 			status.endp_src_idx >= ipa3_ctx->ipa_num_pipes) {
-			IPAERR("status fields invalid\n");
-			IPAERR("STATUS opcode=%d src=%d dst=%d len=%d\n",
+			IPAERR_RL("status fields invalid\n");
+			IPAERR_RL("STATUS opcode=%d src=%d dst=%d len=%d\n",
 				status.status_opcode, status.endp_src_idx,
 				status.endp_dest_idx, status.pkt_len);
 			WARN_ON(1);
@@ -3726,7 +3727,16 @@ static int ipa3_assign_policy(struct ipa_sys_connect_params *in,
 		}  else if (in->client == IPA_CLIENT_ODL_DPL_CONS) {
 			IPADBG("assigning policy to ODL client:%d\n",
 				in->client);
-			sys->ep->status.status_en = true;
+			/* Status enabling is needed for DPLv2 with
+			 * IPA versions < 4.5.
+			 * Dont enable ipa_status for APQ, since MDM IPA
+			 * has IPA >= 4.5 with DPLv3.
+			 */
+			if (ipa3_ctx->platform_type == IPA_PLAT_TYPE_APQ &&
+				ipa3_is_mhip_offload_enabled())
+				sys->ep->status.status_en = false;
+			else
+				sys->ep->status.status_en = true;
 			sys->policy = IPA_POLICY_INTR_POLL_MODE;
 			INIT_WORK(&sys->work, ipa3_wq_handle_rx);
 			INIT_DELAYED_WORK(&sys->switch_to_intr_work,

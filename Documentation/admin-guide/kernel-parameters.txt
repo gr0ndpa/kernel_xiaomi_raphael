@@ -844,6 +844,8 @@
 	dm=		[DM] Allows early creation of a device-mapper device.
 			See Documentation/device-mapper/boot.txt.
 
+	dmasound=	[HW,OSS] Sound subsystem buff
+
 	dma_debug=off	If the kernel is compiled with DMA_API_DEBUG support,
 			this option disables the debugging code at boot.
 
@@ -4896,6 +4898,10 @@
 				unnecessary even if the host did not respond to
 				the unplug protocol
 			never -- do not unplug even if version check succeeds
+
+	xen_legacy_crash	[X86,XEN]
+			Crash from Xen panic notifier, without executing late
+			panic() code such as dumping handler.
 
 	xen_nopvspin	[X86,XEN]
 			Disables the ticketlock slowpath using Xen PV
