@@ -1158,6 +1158,16 @@ static int usb_icl_vote_callback(struct votable *votable, void *data,
 				&pval);
 	}
 
+	if (!chip->usb_psy)
+		chip->usb_psy = power_supply_get_by_name("usb");
+
+	rc = power_supply_get_property(chip->usb_psy,
+				POWER_SUPPLY_PROP_SMB_EN_REASON, &pval);
+	if (rc < 0) {
+		pr_err("Couldn't get cp reason rc=%d\n", rc);
+		return rc;
+	}
+
 	/* set the effective ICL */
 	pval.intval = icl_ua;
 	power_supply_set_property(chip->main_psy,
